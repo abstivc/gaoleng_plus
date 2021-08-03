@@ -2,14 +2,12 @@ package com.adjs.gaoleng_plus.Interceptor;
 
 import com.adjs.gaoleng_plus.annoation.PassToken;
 import com.adjs.gaoleng_plus.annoation.UserLoginToken;
-import com.adjs.gaoleng_plus.entity.UserDo;
-import com.adjs.gaoleng_plus.service.UserServiceImpl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.Response;
-import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,15 +19,13 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
-    @Reference
-    UserServiceImpl userService;
 
+    public static ThreadLocal<String> threadLocalUserId = new ThreadLocal<>();
     @Autowired
     JedisPool jedisPool;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
-        String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
         // 如果不是映射到方法直接通过
         if (!(object instanceof HandlerMethod)) {
             return true;
@@ -47,30 +43,28 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (method.isAnnotationPresent(UserLoginToken.class)) {
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
+                String jessionId = httpServletRequest.getSession().getId();
+
                 // 执行认证
-                if (token == null) {
+                if (jessionId == null) {
                     falseResult(httpServletResponse, "无token，请重新登录");
                     return false;
                 }
                 // 获取 token 中的 user id
-                String userId;
-                try {
-                    userId = JWT.decode(token).getAudience().get(0);
-                } catch (JWTDecodeException j) {
-                    throw new RuntimeException("401");
-                }
-                String redisToken = jedisPool.getResource().get(userId);
+                String redisToken = jedisPool.getResource().get(jessionId);
                 if (StringUtils.isEmpty(redisToken)) {
                     falseResult(httpServletResponse, "登陆失效,请重新登陆");
                     return false;
                 }
-                if (redisToken.equalsIgnoreCase(token)) {
-                    return true;
-                } else {
-                    falseResult(httpServletResponse, "登陆失效,请重新登陆");
-                    return false;
+
+                String userId;
+                try {
+                    userId = JWT.decode(redisToken).getAudience().get(0);
+                } catch (JWTDecodeException j) {
+                    throw new RuntimeException("401");
                 }
 
+                threadLocalUserId.set(userId);
                 /*UserDo user = userService.findUserById(userId);
                 if (user == null) {
                     falseResult(httpServletResponse, "用户不存在，请重新登录");

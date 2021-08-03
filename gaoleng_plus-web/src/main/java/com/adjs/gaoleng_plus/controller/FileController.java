@@ -38,6 +38,7 @@ public class FileController {
         fileService.downloadFile(fileId, request, response);
     }
 
+    @UserLoginToken
     @PostMapping("/upload")
     @ResponseBody
     public Response upload(@RequestParam("file")MultipartFile file) {

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.JedisPool;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,24 +26,26 @@ public class UserServiceImpl extends BaseService {
     @Autowired
     JedisPool jedisPool;
 
-    @PostMapping("/login")
     @ResponseBody
-    public Response login(UserDo userDo) {
+    public Response login(HttpServletRequest request, HttpServletResponse response, UserDo userDo) {
         UserDo userBase = userDao.queryUser(userDo);
         Map<String, Object> data = new HashMap<>();
 
         if (userBase != null) {
             // 返回token
-            String id = userBase.getId();
             String token = tokenService.getToken(userBase);
 
             try {
-                jedisPool.getResource().setex(id, 60 * 60 * 2, token);
+                String jsessionid = request.getSession().getId();
+                // 创建一个 cookie对象
+                jedisPool.getResource().setex(jsessionid, 60 * 60 * 2, token);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+
             data.put("token", token);
+            userBase.setPassword("");
             data.put("user", userBase);
             Response success = retSuccessResponse();
             success.setData(data);

@@ -36,6 +36,9 @@ public class FileServiceImpl extends BaseService {
     @Autowired
     JedisPool jedisPool;
 
+    @Autowired
+    LoginInfo loginInfo;
+
 
     public Response queryFile(String id) {
         Map<String, Object> data = new HashMap<>();
@@ -56,12 +59,13 @@ public class FileServiceImpl extends BaseService {
         if (file.isEmpty()) {
             return retCommonResponse("010001", "上传失败，请选择文件");
         }
+        String userId = loginInfo.getUserId();
         String fileName = file.getOriginalFilename();
         String filePath = glConfig.FILE_PATH + fileName;
         File dest = new File(filePath);
         try {
             file.transferTo(dest);
-            FileDo fileDo = getFileDo(file, "GJS");
+            FileDo fileDo = getFileDo(file, userId);
             fileDo.setPath(filePath);
             fileDao.saveFile(fileDo);
             return retCommonResponse("000000", "上传成功");

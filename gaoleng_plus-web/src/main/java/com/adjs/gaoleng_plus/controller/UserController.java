@@ -5,6 +5,9 @@ import com.adjs.gaoleng_plus.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/user")
@@ -13,9 +16,9 @@ public class UserController {
     UserServiceImpl userService;
 
     //登录
-    @PostMapping("/login")
+    @RequestMapping("/login")
     @ResponseBody
-    public common.Response login(UserDo user) {
-        return userService.login(user);
+    public common.Response login(HttpServletRequest request, HttpServletResponse response, UserDo user) {
+        return userService.login(request, response, user);
     }
 }
