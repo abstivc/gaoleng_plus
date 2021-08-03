@@ -6,7 +6,7 @@
             select replace(UUID(), '-', '' )
         </selectKey>
         insert into
-            gl_support.gl_file (id, name, type, size, path, create_user)
+            gl_file (id, name, type, size, path, create_user)
         values
             (#{id}, #{name}, #{type}, #{size}, #{path}, #{createUser})
     </insert>
@@ -15,7 +15,7 @@
              id, name, type, size, path,create_user, create_time, update_user, update_time,
              CONCAT(#{downloadPrefix}, id) download_path
         from
-             gl_support.gl_file
+             gl_file
         where
               id = #{fileId}
     </select>
@@ -24,7 +24,7 @@
             id, name, type, size, path,create_user, create_time, update_user, update_time,
             CONCAT(#{downloadPrefix}, id) download_path
         from
-            gl_support.gl_file
+            gl_file
         <where>
             <if test="name != null and name != ''">
                 and name like CONCAT(#{name}, '%')
