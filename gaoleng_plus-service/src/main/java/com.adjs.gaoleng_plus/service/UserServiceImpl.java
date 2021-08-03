@@ -5,7 +5,6 @@ import com.adjs.gaoleng_plus.api.UserDao;
 import com.adjs.gaoleng_plus.entity.UserDo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.JedisPool;
 
@@ -55,8 +54,22 @@ public class UserServiceImpl extends BaseService {
         }
     }
 
+    public Response logout(HttpServletRequest request, HttpServletResponse response, UserDo user) {
+        try {
+            String jsessionid = request.getSession().getId();
+            // 创建一个 cookie对象
+            jedisPool.getResource().del(jsessionid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Response success = retSuccessResponse();
+        success.setRespDesc("退出成功");
+        return success;
+    }
+
     public UserDo findUserById(String userId) {
         UserDo userBase = userDao.queryUserById(userId);
         return userBase;
     }
+
 }

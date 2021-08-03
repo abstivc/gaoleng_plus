@@ -1,5 +1,6 @@
 package com.adjs.gaoleng_plus.controller;
 
+import com.adjs.gaoleng_plus.annoation.UserLoginToken;
 import com.adjs.gaoleng_plus.entity.UserDo;
 import com.adjs.gaoleng_plus.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +21,13 @@ public class UserController {
     @ResponseBody
     public common.Response login(HttpServletRequest request, HttpServletResponse response, UserDo user) {
         return userService.login(request, response, user);
+    }
+
+    //登录
+    @UserLoginToken
+    @RequestMapping("/logout")
+    @ResponseBody
+    public common.Response logout(HttpServletRequest request, HttpServletResponse response, UserDo user) {
+        return userService.logout(request, response, user);
     }
 }
