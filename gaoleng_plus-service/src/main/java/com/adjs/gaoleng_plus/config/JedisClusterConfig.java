@@ -11,9 +11,6 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
 public class JedisClusterConfig {
