@@ -36,12 +36,6 @@ public class FileServiceImpl extends BaseService {
     @Autowired
     JedisPool jedisPool;
 
-    @Value("${timeout}")
-    String timeout;
-
-    @Value("${env}")
-    String env;
-
 
     public Response queryFile(String id) {
         Map<String, Object> data = new HashMap<>();
@@ -55,7 +49,6 @@ public class FileServiceImpl extends BaseService {
         Page page = PageHelper.startPage(pageBean.getStart(), pageBean.getLimit());
         fileDao.queryFileList(pageBean.getName(), defaultDownloadPrefix);
         data.put("file", page);
-        data.put("env", timeout + "--" +env);
         return retSuccessResponse(data);
     }
 
