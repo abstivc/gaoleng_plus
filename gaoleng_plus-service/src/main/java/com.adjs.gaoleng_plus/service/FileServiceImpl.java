@@ -6,7 +6,10 @@ import com.adjs.gaoleng_plus.common.PageBean;
 import com.adjs.gaoleng_plus.entity.FileDo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.mysql.cj.log.LogFactory;
 import common.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,9 @@ import java.util.Map;
 
 @Service
 public class FileServiceImpl extends BaseService {
+
+    private static final Logger logger  = LoggerFactory.getLogger(FileServiceImpl.class);
+
     @Autowired
     FileDao fileDao;
 
@@ -41,6 +47,7 @@ public class FileServiceImpl extends BaseService {
 
 
     public Response queryFile(String id) {
+        logger.info("{} 查询文件, 文件id:" + id, loginInfo.getUserId());
         Map<String, Object> data = new HashMap<>();
         FileDo fileDo = fileDao.queryFile(id, defaultDownloadPrefix);
         data.put("file", fileDo);
