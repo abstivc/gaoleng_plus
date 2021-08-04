@@ -2,10 +2,13 @@ package com.adjs.gaoleng_plus.Interceptor;
 
 import com.adjs.gaoleng_plus.annoation.PassToken;
 import com.adjs.gaoleng_plus.annoation.UserLoginToken;
+import com.adjs.gaoleng_plus.service.FileServiceImpl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -18,6 +21,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
+
+    private static final Logger logger  = LoggerFactory.getLogger(AuthenticationInterceptor.class);
+
 
     public static ThreadLocal<String> threadLocalUserId = new ThreadLocal<>();
     @Autowired
@@ -44,6 +50,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (userLoginToken.required()) {
                 String jessionId = httpServletRequest.getSession().getId();
 
+                logger.info("本次请求的jessionid:{}", jessionId);
                 // 执行认证
                 if (jessionId == null) {
                     falseResult(httpServletResponse, "无token，请重新登录");
