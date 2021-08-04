@@ -50,7 +50,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (userLoginToken.required()) {
                 String jessionId = httpServletRequest.getSession().getId();
 
-                logger.info("本次请求的jessionid:{}", jessionId);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("本次请求的jessionid:{}", jessionId);
+                }
                 // 执行认证
                 if (jessionId == null) {
                     falseResult(httpServletResponse, "无token，请重新登录");
