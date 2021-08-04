@@ -30,7 +30,7 @@
 
     <!-- 日志输出级别 -->
     <logger name="org.springframework" level="debug"  additivity="false"/>
-    <logger name="com.lzy.logdemo" level="debug"/>
+    <logger name="com.adjs.gaoleng_plus" level="debug"/>
     <root level="INFO">
         <appender-ref ref="stdout"/>
         <appender-ref ref="appLogAppender"/>
