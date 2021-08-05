@@ -46,7 +46,6 @@ public class FileServiceImpl extends BaseService {
 
 
     public Response queryFile(String id) {
-        logger.info("{} 查询文件, 文件id:" + id, loginInfo.getUserId());
         Map<String, Object> data = new HashMap<>();
         FileDo fileDo = fileDao.queryFile(id, defaultDownloadPrefix);
         data.put("file", fileDo);
