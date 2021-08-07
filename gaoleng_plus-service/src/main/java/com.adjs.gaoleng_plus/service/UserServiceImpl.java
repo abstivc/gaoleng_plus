@@ -3,6 +3,8 @@ package com.adjs.gaoleng_plus.service;
 import common.Response;
 import com.adjs.gaoleng_plus.api.UserDao;
 import com.adjs.gaoleng_plus.entity.UserDo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,6 +17,9 @@ import java.util.Map;
 
 @Service
 public class UserServiceImpl extends BaseService {
+
+    private static final Logger logger  = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Autowired
     UserDao userDao;
 
@@ -26,19 +31,25 @@ public class UserServiceImpl extends BaseService {
 
     @ResponseBody
     public Response login(HttpServletRequest request, HttpServletResponse response, UserDo userDo) {
+        logger.info("step1");
         UserDo userBase = userDao.queryUser(userDo);
         Map<String, Object> data = new HashMap<>();
-
+        logger.info("step2");
         if (userBase != null) {
             // 返回token
             String token = tokenService.getToken(userBase);
+            logger.info("step3");
 
             try {
                 String jsessionid = request.getSession().getId();
+                logger.info("step4");
+
                 // 创建一个 cookie对象
                 jedisPool.getResource().setex(jsessionid, 60 * 60 * 2, token);
+                logger.info("step5");
             } catch (Exception e) {
                 e.printStackTrace();
+                logger.error("step5 err", e);
             }
 
 
@@ -47,6 +58,7 @@ public class UserServiceImpl extends BaseService {
             data.put("user", userBase);
             Response success = retSuccessResponse();
             success.setData(data);
+            logger.info("step6");
             return success;
         } else {
             return retFailedResponse();
