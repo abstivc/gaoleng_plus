@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,11 +59,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     return false;
                 }
                 // 获取 token 中的 user id
-                String redisToken = jedisPool.getResource().get(jessionId);
+                Jedis jedis = jedisPool.getResource();
+
+                String redisToken = jedis.get(jessionId);
                 if (StringUtils.isEmpty(redisToken)) {
                     falseResult(httpServletResponse, "登陆失效,请重新登陆");
                     return false;
                 }
+
+                jedis.close();
 
                 String userId;
                 try {
