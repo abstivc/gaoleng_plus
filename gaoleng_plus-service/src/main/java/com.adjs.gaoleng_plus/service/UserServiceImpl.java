@@ -32,22 +32,17 @@ public class UserServiceImpl extends BaseService {
 
     @ResponseBody
     public Response login(HttpServletRequest request, HttpServletResponse response, UserDo userDo) {
-        logger.info("step1");
         UserDo userBase = userDao.queryUser(userDo);
         Map<String, Object> data = new HashMap<>();
-        logger.info("step2");
         if (userBase != null) {
             // 返回token
             String token = tokenService.getToken(userBase);
-            logger.info("step3");
             Jedis jedis = jedisPool.getResource();
             try {
                 String jsessionid = request.getSession().getId();
-                logger.info("step4");
 
                 // 创建一个 cookie对象
                 jedis.setex(jsessionid, 60 * 60 * 2, token);
-                logger.info("step5");
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("step5 err", e);
@@ -61,7 +56,6 @@ public class UserServiceImpl extends BaseService {
             data.put("user", userBase);
             Response success = retSuccessResponse();
             success.setData(data);
-            logger.info("step6");
             return success;
         } else {
             return retFailedResponse();
