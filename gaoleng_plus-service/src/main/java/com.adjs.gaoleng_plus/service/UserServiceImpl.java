@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,17 +40,19 @@ public class UserServiceImpl extends BaseService {
             // 返回token
             String token = tokenService.getToken(userBase);
             logger.info("step3");
-
+            Jedis jedis = jedisPool.getResource();
             try {
                 String jsessionid = request.getSession().getId();
                 logger.info("step4");
 
                 // 创建一个 cookie对象
-                jedisPool.getResource().setex(jsessionid, 60 * 60 * 2, token);
+                jedis.setex(jsessionid, 60 * 60 * 2, token);
                 logger.info("step5");
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("step5 err", e);
+            } finally {
+                jedis.close();
             }
 
 

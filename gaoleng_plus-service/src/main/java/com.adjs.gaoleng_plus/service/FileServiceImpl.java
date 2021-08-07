@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import redis.clients.jedis.JedisPool;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,9 +36,6 @@ public class FileServiceImpl extends BaseService {
 
     @Value("${download.prefix:/}")
     String defaultDownloadPrefix;
-
-    @Autowired
-    JedisPool jedisPool;
 
     @Autowired
     LoginInfo loginInfo;
